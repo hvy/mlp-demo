@@ -1,9 +1,15 @@
+# Graph plotting
+import matplotlib.pyplot as plt
+
+# Chainer modules
+import chainer.functions as F
+from chainer import FunctionSet, Variable, optimizers
+
+# NumPy is used by Chainer
 import numpy as np
 from numpy import genfromtxt
-import chainer
-from chainer import cuda, Function, FunctionSet, gradient_check, Variable, optimizers, utils
-import chainer.functions as F
-import matplotlib.pyplot as plt
+
+# Helper module to read data from CSV
 from dataparser import DataParser
 
 def target_function(x):
@@ -35,7 +41,7 @@ batchsize = np.size(x_train)
 datasize = np.size(x_train)
 
 # Define the linear network model with 1 input unit and 1 output unit
-model = chainer.FunctionSet(
+model = FunctionSet(
     l1 = F.Linear(1, n_units),
     l2 = F.Linear(n_units, 1)
 )
@@ -45,8 +51,8 @@ def forward(x_data, y_data):
     Define the forward algorithm, a sigmoid activation function and a mean squared error (loss)
     """
     # Convert the NumPy data into Chainer Variables
-    x = chainer.Variable(x_data)
-    t = chainer.Variable(y_data)
+    x = Variable(x_data)
+    t = Variable(y_data)
 
     # Compute the output of the hidden layer with cuDNN (NVIDIA GPU library for DNNs) disabled
     h1 = F.sigmoid(model.l1(x), use_cudnn=False)
