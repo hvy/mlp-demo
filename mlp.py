@@ -20,15 +20,10 @@ def target_function(x):
     x_double = np.multiply(2, x)
     return np.add(x_double, 8)
 
-# Read the training data from a CSV
+# Read the training and test data from CSV files
 csv_parser = DataParser()
-x_train, y_train = csv_parser.parse("data/linear.csv", delimiter=",")
-
-# Generate the test data from the target function
-x_test = np.arange(-4, 5.1, 0.1, dtype=np.float32)
-y_test = target_function(x_train)
-x_test = x_train.reshape(len(x_train), 1)
-y_test = y_train.reshape(len(y_train), 1)
+x_train, y_train = csv_parser.parse("data/linear_training.csv", delimiter=",")
+x_test, y_test = csv_parser.parse("data/linear_test.csv", delimiter=",")
 
 # Network parameters
 n_units = 10
@@ -113,6 +108,8 @@ for epoch in range(n_epochs):
 
     # Save the epoch mean loss so that it can be plotted later on
     train_loss.append(epoch_mean_loss)
+
+
 
     print "Epoch mean loss = {}".format(epoch_mean_loss)
 
