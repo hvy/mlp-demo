@@ -29,7 +29,8 @@ x_test, y_test = csv_parser.parse("data/linear_test.csv", delimiter=",")
 n_units = 10
 
 # Training parameters
-n_epochs = 100
+n_epochs = 70
+# batchsize = np.size(x_train)
 batchsize = np.size(x_train)
 
 # The size of the training data
@@ -41,7 +42,7 @@ model = FunctionSet(
     l2 = F.Linear(n_units, 1)
 )
 
-def forward(x_data, y_data):
+def forward(x_data, y_data, train=True):
     """
     Define the forward algorithm, a sigmoid activation function and a mean squared error (loss)
     """
@@ -68,12 +69,7 @@ optimizer.setup(model)
 
 # Data used for later plotting
 train_loss = []
-train_acc = []
 test_loss = []
-test_acc = []
-
-l1_W = []
-l2_W = []
 
 # Finally, start the training
 for epoch in range(n_epochs):
@@ -92,7 +88,7 @@ for epoch in range(n_epochs):
         optimizer.zero_grads()
 
         # Compute the forward algorithm
-        loss = forward(x_batch, y_batch)
+        loss = forward(x_batch, y_batch, train=True)
 
         # Compute the backward propagation
         loss.backward()
@@ -109,11 +105,25 @@ for epoch in range(n_epochs):
     # Save the epoch mean loss so that it can be plotted later on
     train_loss.append(epoch_mean_loss)
 
+    # Run the test data so that the delta loss can be plotted
+    for i in range(0, datasize, batchsize):
+        x_batch = x_test[indices[i : i + batchsize]]
+        y_batch = y_test[indices[i : i + batchsize]]
 
+        # Compute the forward algorithm
+        loss = forward(x_batch, y_batch, train=False)
 
-    print "Epoch mean loss = {}".format(epoch_mean_loss)
+        # Register the loss so that it can be plotted later on
+        sum_loss += float(loss.data) * batchsize
+
+    # Compute the mean loss for this epoch
+    epoch_mean_loss = sum_loss / datasize
+
+    # Save the epoch mean loss so that it can be plotted later on
+    test_loss.append(epoch_mean_loss)
 
 plt.plot(train_loss)
+plt.plot(test_loss)
 plt.ylabel("Mean squared error")
 plt.xlabel("Epochs")
 plt.show()
